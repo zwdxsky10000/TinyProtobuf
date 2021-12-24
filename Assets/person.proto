@@ -1,0 +1,25 @@
+package tinyprotobuf;
+
+message Person{
+    optional int32 id = 1;
+    optional string name = 2;
+    optional int32 age = 3;
+    repeated int32 nums = 4;
+    repeated float mons = 5;
+    repeated double years = 6;
+    optional AddressBook book = 7;
+}
+
+message AddressBook{
+    optional int32 id = 1;
+    optional string address = 2;
+    repeated AddressPhone phones = 3;
+}
+
+message AddressPhone{
+    optional int32 id = 1;
+    optional string phone = 2;
+    optional string email = 3;
+    optional double serial = 4;
+    optional float cost = 5;
+}
