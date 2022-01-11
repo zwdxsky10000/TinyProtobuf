@@ -78,33 +78,26 @@ public class TestTinyProtobufPref : MonoBehaviour
             }
         };    
         
-        using (var stream = File.Open(Path.Combine(output, "person.bin"), FileMode.OpenOrCreate))
+        using (var stream = File.Open(Path.Combine(output, "person.bin"), FileMode.Create))
         {
             UnityEngine.Profiling.Profiler.BeginSample("TestTinyProtobufPref-Serialize");
             for(int i = 0; i < loopCount; ++i)
             {
-                var outputStream = Protobuf.StreamPool.GetOutputStream();
-
-                p.Encode(outputStream);
-
-                outputStream.FlushToStream(stream);
+                byte[] data = Protobuf.ProtoBuf.Serialize<tinyprotobuf.Person>(p);
+                stream.Write(data, 0, data.Length);
             }
             UnityEngine.Profiling.Profiler.EndSample();
         }
 
-        using (var stream = File.OpenRead(Path.Combine(output, "person.bin")))
+        var bytes = File.ReadAllBytes(Path.Combine(output, "person.bin"));
+
+        tinyprotobuf.Person person1 = null;
+        UnityEngine.Profiling.Profiler.BeginSample("TestProtobufnetPref-Deserialize");
+        for (int i = 0; i < loopCount; ++i)
         {
-            UnityEngine.Profiling.Profiler.BeginSample("TestProtobufnetPref-Deserialize");
-            for(int i = 0; i < loopCount; ++i)
-            {
-                var input = Protobuf.StreamPool.GetInputStream(stream);
-                tinyprotobuf.Person person1 = new tinyprotobuf.Person();
-                person1.Decode(input);
-            } 
-            UnityEngine.Profiling.Profiler.EndSample();
-            
-            //Debug.LogFormat("id=" + person1.id);
+            person1 = Protobuf.ProtoBuf.Deserialize<tinyprotobuf.Person>(bytes);
         }
+        UnityEngine.Profiling.Profiler.EndSample();
     }
 }
 
